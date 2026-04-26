@@ -1,0 +1,1 @@
+<div><p>This section was generated in offline fallback mode because OPENAI_API_KEY is not configured in the runtime environment.</p><p>The section uses deterministic client context and computed financial inputs from the pipeline to keep the report complete and publishable.</p></div>

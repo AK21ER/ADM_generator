@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{ client.company_name }} ADM Strategy</title>
+<style>
+:root{--bg:#f6f8fc;--ink:#111827;--muted:#6b7280;--line:#e5e7eb}*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg)}
+.layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;overflow:auto;background:#0f172a;color:#e2e8f0;padding:20px}.nav a{display:block;color:#cbd5e1;text-decoration:none;padding:8px 10px;border-radius:8px;margin-bottom:6px}.nav a.active,.nav a:hover{background:#1e293b;color:#fff}
+.main{padding:24px 28px}.hero,section{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.kpi{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px}.label{font-size:12px;color:var(--muted)}.value{font-size:20px;font-weight:700}
+table{width:100%;border-collapse:collapse}th,td{border:1px solid var(--line);padding:8px;text-align:left;font-size:13px}th{background:#f9fafb}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.card{border:1px solid var(--line);border-radius:10px;padding:10px}
+</style>
+</head>
+<body><div class="layout"><aside class="sidebar"><h1>{{ client.company_name }} ADM</h1><div class="nav" id="sidebar-nav">{% for s in sections %}<a href="#{{ s.id }}" data-target="{{ s.id }}">{{ s.title }}</a>{% endfor %}</div></aside><main class="main">
+<div class="hero"><h2>{{ client.company_name }} Account Development Master Strategy</h2><p>{{ client.business_overview }}</p><div class="kpi-grid"><div class="kpi"><div class="label">Annual Revenue</div><div class="value">${{ '{:,.0f}'.format(client.annual_revenue) }}</div></div><div class="kpi"><div class="label">Employees</div><div class="value">{{ '{:,}'.format(client.employees) }}</div></div><div class="kpi"><div class="label">Current Annual Run Cost</div><div class="value">${{ '{:,.0f}'.format(financial.total_current_annual_run_cost) }}</div></div><div class="kpi"><div class="label">5Y ROI</div><div class="value">{{ '{:.2f}x'.format(financial.roi) }}</div></div></div></div>
+{% for s in sections %}<section id="{{ s.id }}" data-section-id="{{ s.id }}"><h2>{{ s.title }}</h2>{{ s.html|safe }}
+{% if s.id == 'app-inventory' %}<table><thead><tr><th>Application</th><th>Owner</th><th>Category</th><th>Criticality</th><th>Run Cost</th><th>Hosting</th><th>Recommendation</th></tr></thead><tbody>{% for app in client.application_inventory %}<tr><td>{{ app.app_name }}</td><td>{{ app.business_unit_owner }}</td><td>{{ app.category }}</td><td>{{ app.criticality }}</td><td>${{ '{:,.0f}'.format(app.annual_run_cost) }}</td><td>{{ app.hosting }}</td><td>{{ app.modernization_recommendation }}</td></tr>{% endfor %}</tbody></table>{% endif %}
+{% if s.id == 'methodology' %}<table><thead><tr>{% for m in matrix %}<th>{{ m.category }} ({{ m.app_count }})</th>{% endfor %}</tr></thead><tbody><tr>{% for m in matrix %}<td>{{ m.app_names|join(', ') }}</td>{% endfor %}</tr></tbody></table>{% endif %}
+{% if s.id == 'benchmarking' %}<div class="cards">{% for b in benchmarks %}<div class="card"><h4>{{ b.name }}</h4><p><strong>Gap Score:</strong> {{ b.gap_score }}/10</p><p>{{ b.top_gaps|join(', ') }}</p><ul>{% for a in b.recommended_actions %}<li>{{ a }}</li>{% endfor %}</ul></div>{% endfor %}</div>{% endif %}
+{% if s.id == 'financials' %}{{ financial_chart_svg|safe }}{% endif %}
+{% if s.id == 'execution-roadmap' %}<table><thead><tr><th>Year</th><th>Initiatives</th><th>Apps Impacted</th><th>Expected Savings</th><th>Expected Investment</th><th>Milestones</th></tr></thead><tbody>{% for r in roadmap %}<tr><td>{{ r.year }}</td><td>{{ r.initiatives|join('; ') }}</td><td>{{ r.apps_impacted|join(', ') }}</td><td>${{ '{:,.0f}'.format(r.expected_savings) }}</td><td>${{ '{:,.0f}'.format(r.expected_investment) }}</td><td>{{ r.key_milestones|join('; ') }}</td></tr>{% endfor %}</tbody></table>{% endif %}
+</section>{% endfor %}
+</main></div>
+<script>(function(){const links=[...document.querySelectorAll('#sidebar-nav a')];const sections=[...document.querySelectorAll('section[data-section-id]')];const observer=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){const id=e.target.getAttribute('id');links.forEach(l=>l.classList.toggle('active',l.dataset.target===id));}});},{rootMargin:'-30% 0px -55% 0px',threshold:0.1});sections.forEach(s=>observer.observe(s));})();</script>
+</body></html>
